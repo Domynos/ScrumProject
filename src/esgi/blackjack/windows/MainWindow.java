@@ -33,7 +33,7 @@ public class MainWindow extends JFrame{
 	CardPack cardPack;
 	JButton leaveTableButton;
 	
-	private int nbPlayer = 4;
+	private int nbPlayer = 1;
 
 	public MainWindow(){
 		if(nbPlayer > 4)
