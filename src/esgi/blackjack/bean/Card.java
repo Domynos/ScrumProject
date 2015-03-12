@@ -9,10 +9,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class Card extends JPanel{
 	public int cardNumber;
 	public int signe;
 	private BufferedImage image;
+	private boolean toRight = false;
 	
 	/*
 	 * Signes : 
@@ -22,9 +24,14 @@ public class Card extends JPanel{
 	 * 4 = coeur
 	 */
 	public Card(int _cardNumber, int _signe){
+		this(_cardNumber, _signe, false);
+	}
+	
+	public Card(int _cardNumber, int _signe, boolean _toRight){
+		this.toRight = _toRight;
+		
 		Color trnasparentColor=new Color(1f,0f,0f,0 );
 		this.setBackground(trnasparentColor);
-		
 		cardNumber = _cardNumber;
 		signe = _signe;
 		try {
@@ -55,9 +62,21 @@ public class Card extends JPanel{
 		}
 	}
 	
+	public void setToRight(boolean _toRight) {
+		this.toRight = _toRight;
+	}
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(image, 0, 0, null); // see javadoc for more info on the parameters            
+		
+		int x = 0;
+		int y = 0;
+		
+		if(this.toRight) {
+			x = this.getWidth() - image.getWidth();
+		}
+		
+		g.drawImage(image, x, y, null); // see javadoc for more info on the parameters            
 	}
 }

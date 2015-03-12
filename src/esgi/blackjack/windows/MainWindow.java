@@ -50,7 +50,7 @@ public class MainWindow extends JFrame{
 	CardPack cardPack;
 	JButton leaveTableButton;
 	
-	private int nbPlayer = 1;
+	private int nbPlayer = 4;
 
 	public MainWindow(){
 		if(nbPlayer > 4)
@@ -294,6 +294,7 @@ public class MainWindow extends JFrame{
 			Card firstCard = cardPack.getCard();
 			Card secondCard = cardPack.getCard();
 		
+			firstCard.setToRight(true);
 			players.get(i).addCard(firstCard.cardNumber);
 			players.get(i).addCard(secondCard.cardNumber);
 			System.out.println(players.get(i).getScore());
@@ -337,6 +338,7 @@ public class MainWindow extends JFrame{
 		listPlayerPanel.get(indexPlayer).remove(9);
 		
 		Card previousCard = ((Card) listPlayerPanel.get(indexPlayer).getComponent(9));
+		previousCard.setToRight(true);
 		listPlayerPanel.get(indexPlayer).add(previousCard,gbc);
 		gbc.gridx = 1;
 		listPlayerPanel.get(indexPlayer).add(aCard,gbc);
