@@ -20,7 +20,6 @@ import esgi.blackjack.bean.Card;
 import esgi.blackjack.bean.CardPack;
 import esgi.blackjack.bean.PlayMat;
 import esgi.blackjack.bean.Player;
-import esgi.blackjack.listener.FinishListener;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame{
@@ -30,7 +29,6 @@ public class MainWindow extends JFrame{
 	JTextField fieldBanque;
 	Card aCardBanque;
 	JButton tirerCardBanque;
-	JButton currentFinish;
 	JButton finirBanque;
 	
 	
@@ -106,7 +104,7 @@ public class MainWindow extends JFrame{
 			players.add(new Player());
 
 			JButton currentCardButton = new JButton("Prendre une carte");
-			currentFinish = new JButton("Terminer");
+			JButton currentFinish = new JButton("Terminer");
 						
 			currentCardButton.addActionListener(new ActionListener() {
 				
@@ -120,7 +118,6 @@ public class MainWindow extends JFrame{
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					finTourJoueur(e.getSource());
-					currentFinish.setVisible(false);
 				}
 			});
 			
@@ -154,7 +151,7 @@ public class MainWindow extends JFrame{
 		}
 		
 		this.banque.addCard(aCardBanque.cardNumber);
-		System.out.println("La banque reÃ§oit la valeur "+ aCardBanque.cardNumber + " En premiÃ¨re carte ");
+		System.out.println("La banque reçoit la valeur "+ aCardBanque.cardNumber + " En première carte ");
 		
 		
 		
@@ -180,9 +177,7 @@ public class MainWindow extends JFrame{
 		});
 		
 		tirerCardBanque.setVisible(false);
-		
-		leaveTableButton.setBackground(null);
-		
+				
 		JPanel tempPanel = new JPanel();
 		
 		tempPanel.add(leaveTableButton);
@@ -284,12 +279,14 @@ public class MainWindow extends JFrame{
 		bankPanel.repaint();
 		bankPanel.validate();
 		bankPanel.updateUI();
-		System.out.println("La banque pioche en deuxiÃ¨me carte "+aCardBanque);
+		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
 		this.banque.addCard(aCardBanque.cardNumber);
 		this.fieldBanque.setText(String.valueOf(this.banque.score));
 		
 		tirerCardBanque.setVisible(true);
-		currentFinish.setVisible(false);
+		
+		if(source.getClass().equals(JButton.class))
+			((JButton)source).setEnabled(false);
 	}
 
 	
@@ -310,12 +307,12 @@ public class MainWindow extends JFrame{
 		bankPanel.repaint();
 		bankPanel.validate();
 		bankPanel.updateUI();
-		System.out.println("La banque pioche en deuxiÃ¨me carte "+aCardBanque);
+		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
 		this.banque.addCard(aCardBanque.cardNumber);
 		this.fieldBanque.setText(String.valueOf(this.banque.score));
 		
 		if(this.banque.score>21){
-			this.fieldBanque.setText(String.valueOf(this.banque.score) + " - La banque dÃ©passe 21 elle PERD !!!");
+			this.fieldBanque.setText(String.valueOf(this.banque.score) + " - La banque dépasse 21 elle PERD !!!");
 			this.tirerCardBanque.setVisible(false);
 		}
 		
