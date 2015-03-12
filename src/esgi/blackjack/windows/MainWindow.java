@@ -119,6 +119,14 @@ public class MainWindow extends JFrame{
 	
 	private void initBankPanel(){
 		leaveTableButton = new JButton("Quitter la table");
+		
+		leaveTableButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		
 		JPanel tempPanel = new JPanel();
 		tempPanel.add(leaveTableButton);
 		tempPanel.setBackground(bankPanel.getBackground());
