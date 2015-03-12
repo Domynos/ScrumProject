@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import esgi.blackjack.bean.Card;
 import esgi.blackjack.bean.CardPack;
@@ -26,8 +27,16 @@ public class MainWindow extends JFrame{
 	JPanel bankCardPanel, playerPanel;
 	PlayMat bankPanel;
 	
+	JTextField fieldBanque;
+	Card aCardBanque;
+	JButton tirerCardBanque;
+	JButton currentFinish;
+	JButton finirBanque;
+	
+	
 	List<JPanel> listPlayerPanel;
 	List<Player> players = new ArrayList<Player>();
+	Player banque = new Player();
 	List<JButton> askForCardButtons = new ArrayList<JButton>();
 	List<JButton> finishButtons = new ArrayList<JButton>();
 	Color transparentColor=new Color(1f,0f,0f,0 );
@@ -43,6 +52,8 @@ public class MainWindow extends JFrame{
 		else if(nbPlayer < 0)
 			nbPlayer = 1;
 		
+		
+		cardPack = new CardPack();
 		initUI();
 		initZones();
 		initPlayerPanel();
@@ -95,7 +106,7 @@ public class MainWindow extends JFrame{
 			players.add(new Player());
 
 			JButton currentCardButton = new JButton("Prendre une carte");
-			JButton currentFinish = new JButton("Terminer");
+			currentFinish = new JButton("Terminer");
 						
 			currentCardButton.addActionListener(new ActionListener() {
 				
@@ -104,7 +115,14 @@ public class MainWindow extends JFrame{
 					addCard(e.getSource());
 				}
 			});
-			currentFinish.addActionListener(new FinishListener());
+			currentFinish.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					finTourJoueur(e.getSource());
+					currentFinish.setVisible(false);
+				}
+			});
 			
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx=0;
@@ -125,6 +143,20 @@ public class MainWindow extends JFrame{
 	
 	private void initBankPanel(){
 		leaveTableButton = new JButton("Quitter la table");
+		tirerCardBanque = new JButton("Tirer Carte");
+		finirBanque = new JButton("Finir pour la banque"); 
+		
+		aCardBanque = cardPack.getCard();
+
+		if(aCardBanque == null) {
+			JOptionPane.showMessageDialog(null,"Plus de carte dans le deck !");
+			return;
+		}
+		
+		this.banque.addCard(aCardBanque.cardNumber);
+		System.out.println("La banque reçoit la valeur "+ aCardBanque.cardNumber + " En première carte ");
+		
+		
 		
 		leaveTableButton.addActionListener(new ActionListener() {
 			@Override
@@ -133,26 +165,53 @@ public class MainWindow extends JFrame{
 			}
 		});
 		
+		tirerCardBanque.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent e) {
+				tirerCarteBanque();
+			}
+		});
+		
+		finirBanque.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent e) {
+				resultFinDeGameMotherFUckaaaaa();
+			}
+		});
+		
+		tirerCardBanque.setVisible(false);
+		
 		leaveTableButton.setBackground(null);
 		
 		JPanel tempPanel = new JPanel();
+		
 		tempPanel.add(leaveTableButton);
-
+		tempPanel.add(tirerCardBanque);
+		tempPanel.add(finirBanque);
+		
 		tempPanel.setBackground(transparentColor);
 		tempPanel.validate();
-
+		fieldBanque = new JTextField(String.valueOf(this.banque.score)); 
+		fieldBanque.setEditable(false);
+		
+		
+		
+		
 		bankPanel.add(tempPanel);
+		bankPanel.add(fieldBanque);
+		bankPanel.add(aCardBanque);
+	
 		
 		bankCardPanel = new JPanel();
 
 		bankCardPanel.setBackground(transparentColor);
 		bankCardPanel.setLayout(new GridLayout(2,0));
 			
-		bankPanel.add(bankCardPanel);
+		
+		bankPanel.add(bankCardPanel);		
 	}
 	
 	private void distribute(){
-		cardPack = new CardPack();
 		
 		for(int i = 0 ; i < this.players.size() ; ++i) {
 			
@@ -177,6 +236,7 @@ public class MainWindow extends JFrame{
 		}
 
 	}
+	
 	
 	private void addCard(Object source){
 		
@@ -203,5 +263,78 @@ public class MainWindow extends JFrame{
 		gbc.gridx = 1;
 		listPlayerPanel.get(indexPlayer).add(aCard,gbc);
 		validate();
+	}
+	
+	
+	
+	private void finTourJoueur(Object source) {
+		aCardBanque = cardPack.getCard();
+
+		if(aCardBanque == null) {
+			JOptionPane.showMessageDialog(null,"Plus de carte dans le deck !");
+			return;
+		}
+		
+		
+		bankPanel.remove(2);
+		bankPanel.add(aCardBanque,2);
+		aCardBanque.repaint();
+		aCardBanque.validate();
+		aCardBanque.updateUI();
+		bankPanel.repaint();
+		bankPanel.validate();
+		bankPanel.updateUI();
+		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
+		this.banque.addCard(aCardBanque.cardNumber);
+		this.fieldBanque.setText(String.valueOf(this.banque.score));
+		
+		tirerCardBanque.setVisible(true);
+		currentFinish.setVisible(false);
+	}
+
+	
+	private void tirerCarteBanque() {
+		aCardBanque = cardPack.getCard();
+
+		if(aCardBanque == null) {
+			JOptionPane.showMessageDialog(null,"Plus de carte dans le deck !");
+			return;
+		}
+		
+		
+		bankPanel.remove(2);
+		bankPanel.add(aCardBanque,2);
+		aCardBanque.repaint();
+		aCardBanque.validate();
+		aCardBanque.updateUI();
+		bankPanel.repaint();
+		bankPanel.validate();
+		bankPanel.updateUI();
+		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
+		this.banque.addCard(aCardBanque.cardNumber);
+		this.fieldBanque.setText(String.valueOf(this.banque.score));
+		
+		if(this.banque.score>21){
+			this.fieldBanque.setText(String.valueOf(this.banque.score) + " - La banque dépasse 21 elle PERD !!!");
+			this.tirerCardBanque.setVisible(false);
+		}
+		
+		if(this.banque.score<=17){
+			this.tirerCardBanque.setVisible(false);
+		}
+	}
+	
+	private void resultFinDeGameMotherFUckaaaaa() {
+		
+		boolean unJoueurGagnant = false;
+		for(Player tempJoueur : this.players){
+			if(tempJoueur.score >= this.banque.score){
+				this.fieldBanque.setText("Le joueur gagne : " + tempJoueur.score +" - La banque perd : "+this.banque.score);
+				unJoueurGagnant = true;
+			}
+		}
+		if(!unJoueurGagnant){
+			this.fieldBanque.setText("La banque gagne avec un score de : " +this.banque.score);	
+		}
 	}
 }
