@@ -168,6 +168,7 @@ public class MainWindow extends JFrame{
 		
 		if(aCard == null) {
 			JOptionPane.showMessageDialog(null,"Plus de carte dans le deck !");
+			return;
 		}
 		
 		int indexPlayer = this.askForCardButtons.indexOf(source);
