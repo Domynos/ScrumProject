@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -35,8 +36,15 @@ public class MainWindow extends JFrame{
 	List<JPanel> listPlayerPanel;
 	List<Player> players = new ArrayList<Player>();
 	Player banque = new Player();
+	
 	List<JButton> askForCardButtons = new ArrayList<JButton>();
 	List<JButton> finishButtons = new ArrayList<JButton>();
+	List<JButton> betButtons = new ArrayList<JButton>();
+	
+	List<JLabel> scoreLabels = new ArrayList<JLabel>();
+	List<JLabel> betLabels = new ArrayList<JLabel>();
+	List<JLabel> tapisLabels = new ArrayList<JLabel>();
+	
 	Color transparentColor=new Color(1f,0f,0f,0 );
 
 	CardPack cardPack;
@@ -78,9 +86,6 @@ public class MainWindow extends JFrame{
 			listPlayerPanel.add(aPanel);
 		}
 		
-//		bankPanel.setBackground(Color.green);
-
-		
 		bankPanel.setLayout(new GridLayout(0,3));
 		
 		playerPanel.setBackground(Color.blue);
@@ -100,11 +105,55 @@ public class MainWindow extends JFrame{
 		finishButtons.clear();
 		players.clear();
 		
+		scoreLabels.clear();
+		betLabels.clear();
+		tapisLabels.clear();
+		
+		JLabel descScoreLabel;
+		JLabel descBetLabel;
+		JLabel descTapisLabel;
+		
 		for(int i = 0 ; i < this.listPlayerPanel.size() ; ++i) {
-			players.add(new Player());
+			Player currentPlayer = new Player();
+			players.add(currentPlayer);
+			
+			currentPlayer.setTapis(500);
 
+
+			descScoreLabel = new JLabel("Score : ");
+			descScoreLabel.setHorizontalAlignment(JLabel.RIGHT);
+			descScoreLabel.setVerticalAlignment(JLabel.CENTER);
+			descScoreLabel.setForeground(Color.WHITE);
+			
+			descBetLabel = new JLabel("Mise : ");
+			descBetLabel.setHorizontalAlignment(JLabel.RIGHT);
+			descBetLabel.setVerticalAlignment(JLabel.CENTER);
+			descBetLabel.setForeground(Color.WHITE);
+			
+			descTapisLabel = new JLabel("Tapis : ");
+			descTapisLabel.setHorizontalAlignment(JLabel.RIGHT);
+			descTapisLabel.setVerticalAlignment(JLabel.CENTER);
+			descTapisLabel.setForeground(Color.WHITE);
+			
 			JButton currentCardButton = new JButton("Prendre une carte");
+			// espaces rajoutés pour que les boutons prennes la même place...
+			JButton currentBetButton = new JButton("           Miser           ");
 			JButton currentFinish = new JButton("Terminer");
+
+			JLabel currentScoreLabel = new JLabel(""+currentPlayer.getScore());
+			currentScoreLabel.setHorizontalAlignment(JLabel.LEFT);
+			currentScoreLabel.setVerticalAlignment(JLabel.CENTER);
+			currentScoreLabel.setForeground(Color.WHITE);
+			
+			JLabel currentBetLabel = new JLabel("0");
+			currentBetLabel.setHorizontalAlignment(JLabel.LEFT);
+			currentBetLabel.setVerticalAlignment(JLabel.CENTER);
+			currentBetLabel.setForeground(Color.WHITE);
+			
+			JLabel currentTapisLabel = new JLabel(""+currentPlayer.getTapis());	
+			currentTapisLabel.setHorizontalAlignment(JLabel.LEFT);
+			currentTapisLabel.setVerticalAlignment(JLabel.CENTER);
+			currentTapisLabel.setForeground(Color.WHITE);
 						
 			currentCardButton.addActionListener(new ActionListener() {
 				
@@ -120,6 +169,13 @@ public class MainWindow extends JFrame{
 					finTourJoueur(e.getSource());
 				}
 			});
+			currentBetButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					
+				}
+			});
 			
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx=0;
@@ -131,10 +187,39 @@ public class MainWindow extends JFrame{
 			listPlayerPanel.get(i).add(currentCardButton,gbc);
 			
 			gbc.gridx=1;
+			listPlayerPanel.get(i).add(currentBetButton,gbc);
+			gbc.gridx=0;
+			gbc.gridy=1;
+			gbc.gridwidth=2;
 			listPlayerPanel.get(i).add(currentFinish,gbc);
 
 			askForCardButtons.add(currentCardButton);
+			betButtons.add(currentBetButton);
 			finishButtons.add(currentFinish);
+
+			// saute une ligne pour laisser la place aux cartes
+			gbc.gridy=3;
+			gbc.gridx=0;
+			gbc.gridwidth=1;
+			listPlayerPanel.get(i).add(descScoreLabel, gbc);
+			gbc.gridx=1;
+			listPlayerPanel.get(i).add(currentScoreLabel,gbc);
+
+			gbc.gridy=4;
+			gbc.gridx=0;
+			listPlayerPanel.get(i).add(descBetLabel,gbc);
+			gbc.gridx=1;
+			listPlayerPanel.get(i).add(currentBetLabel,gbc);
+
+			gbc.gridy=5;
+			gbc.gridx=0;
+			listPlayerPanel.get(i).add(descTapisLabel,gbc);
+			gbc.gridx=1;
+			listPlayerPanel.get(i).add(currentTapisLabel,gbc);
+			
+			scoreLabels.add(currentScoreLabel);
+			betLabels.add(currentBetLabel);
+			tapisLabels.add(currentTapisLabel);
 		}
 	}
 	
@@ -186,16 +271,12 @@ public class MainWindow extends JFrame{
 		
 		tempPanel.setBackground(transparentColor);
 		tempPanel.validate();
-		fieldBanque = new JTextField(String.valueOf(this.banque.score)); 
+		fieldBanque = new JTextField(String.valueOf(this.banque.getScore())); 
 		fieldBanque.setEditable(false);
-		
-		
-		
 		
 		bankPanel.add(tempPanel);
 		bankPanel.add(fieldBanque);
 		bankPanel.add(aCardBanque);
-	
 		
 		bankCardPanel = new JPanel();
 
@@ -215,11 +296,11 @@ public class MainWindow extends JFrame{
 		
 			players.get(i).addCard(firstCard.cardNumber);
 			players.get(i).addCard(secondCard.cardNumber);
-			System.out.println(players.get(i).score);
+			System.out.println(players.get(i).getScore());
 		
 			GridBagConstraints gbc = new GridBagConstraints();
 			gbc.gridx=0;
-			gbc.gridy=1;
+			gbc.gridy=2;
 			gbc.fill=GridBagConstraints.BOTH;
 			gbc.weightx = 1;
 			gbc.weighty = 40;
@@ -245,18 +326,23 @@ public class MainWindow extends JFrame{
 		int indexPlayer = this.askForCardButtons.indexOf(source);
 		
 		players.get(indexPlayer).addCard(aCard.cardNumber);
-		System.out.println(players.get(indexPlayer).score);
+		System.out.println(players.get(indexPlayer).getScore());
 		
 		GridBagConstraints gbc = new GridBagConstraints();
 		gbc.gridx = 0;
-		gbc.gridy = 1;
+		gbc.gridy = 2;
 		gbc.fill=GridBagConstraints.BOTH;
 		gbc.weightx = 1;
 		gbc.weighty = 40;
-		listPlayerPanel.get(indexPlayer).remove(2);
-		listPlayerPanel.get(indexPlayer).add(listPlayerPanel.get(indexPlayer).getComponent(2),gbc);
+		listPlayerPanel.get(indexPlayer).remove(9);
+		
+		Card previousCard = ((Card) listPlayerPanel.get(indexPlayer).getComponent(9));
+		listPlayerPanel.get(indexPlayer).add(previousCard,gbc);
 		gbc.gridx = 1;
 		listPlayerPanel.get(indexPlayer).add(aCard,gbc);
+		
+		scoreLabels.get(indexPlayer).setText(""+players.get(indexPlayer).getScore());
+		
 		validate();
 	}
 	
@@ -270,7 +356,6 @@ public class MainWindow extends JFrame{
 			return;
 		}
 		
-		
 		bankPanel.remove(2);
 		bankPanel.add(aCardBanque,2);
 		aCardBanque.repaint();
@@ -281,7 +366,7 @@ public class MainWindow extends JFrame{
 		bankPanel.updateUI();
 		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
 		this.banque.addCard(aCardBanque.cardNumber);
-		this.fieldBanque.setText(String.valueOf(this.banque.score));
+		this.fieldBanque.setText(String.valueOf(this.banque.getScore()));
 		
 		tirerCardBanque.setVisible(true);
 		
@@ -309,14 +394,14 @@ public class MainWindow extends JFrame{
 		bankPanel.updateUI();
 		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
 		this.banque.addCard(aCardBanque.cardNumber);
-		this.fieldBanque.setText(String.valueOf(this.banque.score));
+		this.fieldBanque.setText(String.valueOf(this.banque.getScore()));
 		
-		if(this.banque.score>21){
-			this.fieldBanque.setText(String.valueOf(this.banque.score) + " - La banque dépasse 21 elle PERD !!!");
+		if(this.banque.getScore()>21){
+			this.fieldBanque.setText(String.valueOf(this.banque.getScore()) + " - La banque dépasse 21 elle PERD !!!");
 			this.tirerCardBanque.setVisible(false);
 		}
 		
-		if(this.banque.score<=17){
+		if(this.banque.getScore()<=17){
 			this.tirerCardBanque.setVisible(false);
 		}
 	}
@@ -325,13 +410,13 @@ public class MainWindow extends JFrame{
 		
 		boolean unJoueurGagnant = false;
 		for(Player tempJoueur : this.players){
-			if(tempJoueur.score >= this.banque.score){
-				this.fieldBanque.setText("Le joueur gagne : " + tempJoueur.score +" - La banque perd : "+this.banque.score);
+			if(tempJoueur.getScore() >= this.banque.getScore()){
+				this.fieldBanque.setText("Le joueur gagne : " + tempJoueur.getScore() +" - La banque perd : "+this.banque.getScore());
 				unJoueurGagnant = true;
 			}
 		}
 		if(!unJoueurGagnant){
-			this.fieldBanque.setText("La banque gagne avec un score de : " +this.banque.score);	
+			this.fieldBanque.setText("La banque gagne avec un score de : " +this.banque.getScore());	
 		}
 	}
 }
