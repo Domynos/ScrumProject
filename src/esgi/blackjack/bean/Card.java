@@ -1,5 +1,6 @@
 package esgi.blackjack.bean;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -21,6 +22,9 @@ public class Card extends JPanel{
 	 * 4 = coeur
 	 */
 	public Card(int _cardNumber, int _signe){
+		Color trnasparentColor=new Color(1f,0f,0f,0 );
+		this.setBackground(trnasparentColor);
+		
 		cardNumber = _cardNumber;
 		signe = _signe;
 		try {

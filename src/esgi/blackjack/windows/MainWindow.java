@@ -17,19 +17,21 @@ import javax.swing.JPanel;
 
 import esgi.blackjack.bean.Card;
 import esgi.blackjack.bean.CardPack;
+import esgi.blackjack.bean.PlayMat;
 import esgi.blackjack.bean.Player;
 import esgi.blackjack.listener.FinishListener;
-import esgi.blackjack.utils.ImageBankPanel;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame{
-	JPanel bankPanel, bankCardPanel, playerPanel;
+	JPanel bankCardPanel, playerPanel;
+	PlayMat bankPanel;
 	
 	List<JPanel> listPlayerPanel;
 	List<Player> players = new ArrayList<Player>();
 	List<JButton> askForCardButtons = new ArrayList<JButton>();
 	List<JButton> finishButtons = new ArrayList<JButton>();
-	
+	Color transparentColor=new Color(1f,0f,0f,0 );
+
 	CardPack cardPack;
 	JButton leaveTableButton;
 	
@@ -57,23 +59,27 @@ public class MainWindow extends JFrame{
 	}
 
 	private void initZones(){
-		bankPanel = new JPanel();
+		bankPanel = new PlayMat("table.jpeg");
 		playerPanel = new JPanel();
 		listPlayerPanel = new LinkedList<JPanel>();
 		
 		for(int i=0;i<nbPlayer;i++){
-			JPanel aPanel = new JPanel();
-			if((i%2)==0)aPanel.setBackground(Color.red);else aPanel.setBackground(Color.yellow);
+			PlayMat aPanel = new PlayMat("playerBackground.jpeg");
 			aPanel.setLayout(new GridBagLayout());
 			listPlayerPanel.add(aPanel);
 		}
 		
-		bankPanel.setBackground(Color.green);
+//		bankPanel.setBackground(Color.green);
+
+		
 		bankPanel.setLayout(new GridLayout(0,3));
-		playerPanel.setBackground(Color.black);
+		
+		playerPanel.setBackground(Color.blue);
 		playerPanel.setLayout(new GridLayout(0,nbPlayer));
 		
 		for (JPanel aPanel : listPlayerPanel) {
+			aPanel.setBackground(transparentColor);
+
 			playerPanel.add(aPanel);
 		}
 		this.add(bankPanel);
@@ -127,19 +133,21 @@ public class MainWindow extends JFrame{
 			}
 		});
 		
+		leaveTableButton.setBackground(null);
+		
 		JPanel tempPanel = new JPanel();
 		tempPanel.add(leaveTableButton);
-		tempPanel.setBackground(bankPanel.getBackground());
+
+		tempPanel.setBackground(transparentColor);
+		tempPanel.validate();
+
 		bankPanel.add(tempPanel);
 		
 		bankCardPanel = new JPanel();
-		bankCardPanel.setBackground(bankPanel.getBackground());
+
+		bankCardPanel.setBackground(transparentColor);
 		bankCardPanel.setLayout(new GridLayout(2,0));
-		
-		/* Ajout image et cartes */
-		bankCardPanel.add(new ImageBankPanel());
-		/* */
-		
+			
 		bankPanel.add(bankCardPanel);
 	}
 	
