@@ -19,7 +19,7 @@ public class Player {
 	}
 	
 	public void setTapis(int _tapis) {
-		tapis = _tapis;
+		tapis = (_tapis - currentBet);
 	}
 	
 	public void setBet(int bet) {
@@ -33,10 +33,12 @@ public class Player {
 		
 	
 	public void win(int pot){
-		tapis += pot;
+		tapis += (pot - currentBet);
+		currentBet = 0;
 	}
 	
 	public void lose(){
 		tapis -= currentBet;
+		currentBet = 0;
 	}
 }

@@ -52,6 +52,8 @@ public class MainWindow extends JFrame {
 	JButton leaveTableButton;
 	
 	private int nbPlayer = 1;
+	
+	private int pot = 0;
 
 	public MainWindow(){
 		if(nbPlayer > 4)
@@ -414,22 +416,56 @@ public class MainWindow extends JFrame {
         if(JOptionPane.showConfirmDialog(null, betPanel,
                         "Sélectionner votre mise", JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
+
+    		int previousBet = Integer.parseInt(betLabels.get(indexPlayer).getText());
+    		pot -= previousBet;
+    		
     		players.get(indexPlayer).setBet(betPanel.getBet());
     		betLabels.get(indexPlayer).setText(""+betPanel.getBet());
+    		tapisLabels.get(indexPlayer).setText(""+players.get(indexPlayer).getTapis());
+    		
+    		pot += betPanel.getBet(); 
         }
 	}
 	
 	private void resultFinDeGameMotherFUckaaaaa() {
 		
-		boolean unJoueurGagnant = false;
-		for(Player tempJoueur : this.players){
-			if(tempJoueur.getScore() >= this.banque.getScore()){
-				this.fieldBanque.setText("Le joueur gagne : " + tempJoueur.getScore() +" - La banque perd : "+this.banque.getScore());
-				unJoueurGagnant = true;
+		int indexPlayer = 0;
+		int playerMaxScore = -1; //Banque
+		int tempScore = 0;
+		
+		Player tempPlayer = null;
+		for(int i = 0 ; i < players.size() ; ++i){
+			tempPlayer = players.get(i);
+			if(tempPlayer.getScore() > tempScore && tempPlayer.getScore() <= 21){
+				tempScore = tempPlayer.getScore();
+				indexPlayer = i;
 			}
 		}
-		if(!unJoueurGagnant){
+		
+		if(tempScore > banque.getScore() || banque.getScore() > 21) {
+			playerMaxScore = tempScore;
+		}
+		
+		if(playerMaxScore == -1) {
 			this.fieldBanque.setText("La banque gagne avec un score de : " +this.banque.getScore());	
+			for(Player tempJoueur : this.players){
+				tempJoueur.lose();
+			}
+		} else {
+			this.fieldBanque.setText("Le joueur "+(indexPlayer+1)+" gagne avec un score de : "+playerMaxScore);	
+			for(int i = 0 ; i < players.size() ; ++i) {
+				if(i == indexPlayer)
+					players.get(i).win(pot);
+				else
+					players.get(i).lose();
+			}
+		}
+		
+		for(int i = 0 ; i < players.size() ; ++i) {
+    		betLabels.get(i).setText(""+0);
+    		scoreLabels.get(i).setText(""+players.get(i).getScore());
+    		tapisLabels.get(i).setText(""+players.get(i).getTapis());
 		}
 	}
 }
