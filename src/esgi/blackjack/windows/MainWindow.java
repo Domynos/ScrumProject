@@ -311,6 +311,8 @@ public class MainWindow extends JFrame {
 			
 			gbc.gridx=1;
 			listPlayerPanel.get(i).add(secondCard,gbc);
+			
+			scoreLabels.get(i).setText(""+players.get(i).getScore());
 		}
 
 	}
