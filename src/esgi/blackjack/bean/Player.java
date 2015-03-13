@@ -15,15 +15,19 @@ public class Player {
 	}
 	
 	public int getTapis() {
-		return tapis;
+		return (tapis - currentBet);
 	}
 	
 	public void setTapis(int _tapis) {
-		tapis = (_tapis - currentBet);
+		tapis = _tapis;
 	}
 	
 	public void setBet(int bet) {
 		currentBet = bet;
+	}
+	
+	public int getBet(){
+		return currentBet;
 	}
 	
 	public void addCard(int _cardNumber){
@@ -32,8 +36,13 @@ public class Player {
 
 		
 	
-	public void win(int pot){
-		tapis += (pot - currentBet);
+	public void win(boolean blackjack){
+		if(blackjack)
+			tapis += ((int)(currentBet * 2));
+		else
+			tapis += ((int)(currentBet * 1.5));
+		
+		tapis -= currentBet;
 		currentBet = 0;
 	}
 	

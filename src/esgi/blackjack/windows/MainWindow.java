@@ -1,6 +1,7 @@
 package esgi.blackjack.windows;
 	
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -22,6 +23,7 @@ import esgi.blackjack.bean.Card;
 import esgi.blackjack.bean.CardPack;
 import esgi.blackjack.bean.PlayMat;
 import esgi.blackjack.bean.Player;
+import esgi.blackjack.utils.Utils;
 
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
@@ -52,8 +54,6 @@ public class MainWindow extends JFrame {
 	JButton leaveTableButton;
 	
 	private int nbPlayer = 1;
-	
-	private int pot = 0;
 
 	public MainWindow(){
 		if(nbPlayer > 4)
@@ -227,7 +227,7 @@ public class MainWindow extends JFrame {
 	}
 	
 	private void initBankPanel(){
-		leaveTableButton = new JButton("Quitter la table");
+		leaveTableButton = new JButton("Nouvelle partie");
 		tirerCardBanque = new JButton("Tirer Carte");
 		finirBanque = new JButton("Finir pour la banque"); 
 		
@@ -244,7 +244,8 @@ public class MainWindow extends JFrame {
 		leaveTableButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
+				//System.exit(0);
+				nouvellePartie();
 			}
 		});
 		
@@ -273,6 +274,7 @@ public class MainWindow extends JFrame {
 		tempPanel.setBackground(transparentColor);
 		tempPanel.validate();
 		fieldBanque = new JTextField(String.valueOf(this.banque.getScore())); 
+		fieldBanque.setPreferredSize(new Dimension(100,50));
 		fieldBanque.setEditable(false);
 		
 		bankPanel.add(tempPanel);
@@ -311,10 +313,8 @@ public class MainWindow extends JFrame {
 			
 			gbc.gridx=1;
 			listPlayerPanel.get(i).add(secondCard,gbc);
-			
 			scoreLabels.get(i).setText(""+players.get(i).getScore());
 		}
-
 	}
 	
 	
@@ -348,12 +348,27 @@ public class MainWindow extends JFrame {
 		
 		scoreLabels.get(indexPlayer).setText(""+players.get(indexPlayer).getScore());
 		
+		if(players.get(indexPlayer).getScore() > 21){
+			JOptionPane.showMessageDialog(null,"Perdu !\nVous avez dépassé 21");
+			askForCardButtons.get(indexPlayer).setVisible(false);
+			betButtons.get(indexPlayer).setVisible(false);
+		}
 		validate();
 	}
 	
 	
 	
 	private void finTourJoueur(Object source) {
+		JButton button = (JButton) source;
+		int indexPlayer = -1;
+		for(int i=0;i<finishButtons.size();i++){
+			if(finishButtons.get(i) == button){
+				indexPlayer = i;
+			}
+		}
+
+		askForCardButtons.get(indexPlayer).setVisible(false);
+		betButtons.get(indexPlayer).setVisible(false);
 		aCardBanque = cardPack.getCard();
 
 		if(aCardBanque == null) {
@@ -372,8 +387,15 @@ public class MainWindow extends JFrame {
 		System.out.println("La banque pioche en deuxième carte "+aCardBanque);
 		this.banque.addCard(aCardBanque.cardNumber);
 		this.fieldBanque.setText(String.valueOf(this.banque.getScore()));
+		this.fieldBanque.setMaximumSize(new Dimension(100,30));
 		
 		tirerCardBanque.setVisible(true);
+		
+		if(this.banque.getScore()>21){
+			this.fieldBanque.setText("La banque PERD : " +this.banque.getScore()+"\nVous avez gagné : "+players.get(indexPlayer).getBet()*1.5);
+			this.finirBanque.setVisible(false);
+			this.tirerCardBanque.setVisible(false);
+		}
 		
 		if(source.getClass().equals(JButton.class))
 			((JButton)source).setEnabled(false);
@@ -404,11 +426,9 @@ public class MainWindow extends JFrame {
 		if(this.banque.getScore()>21){
 			this.fieldBanque.setText(String.valueOf(this.banque.getScore()) + " - La banque dépasse 21 elle PERD !!!");
 			this.tirerCardBanque.setVisible(false);
+			this.finirBanque.setVisible(false);
 		}
 		
-		if(this.banque.getScore()<=17){
-			this.tirerCardBanque.setVisible(false);
-		}
 	}
 	
 	private void playerBet(Object source) {
@@ -418,56 +438,44 @@ public class MainWindow extends JFrame {
         if(JOptionPane.showConfirmDialog(null, betPanel,
                         "Sélectionner votre mise", JOptionPane.OK_CANCEL_OPTION,
                         JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
-
-    		int previousBet = Integer.parseInt(betLabels.get(indexPlayer).getText());
-    		pot -= previousBet;
-    		
     		players.get(indexPlayer).setBet(betPanel.getBet());
     		betLabels.get(indexPlayer).setText(""+betPanel.getBet());
     		tapisLabels.get(indexPlayer).setText(""+players.get(indexPlayer).getTapis());
-    		
-    		pot += betPanel.getBet(); 
         }
 	}
 	
 	private void resultFinDeGameMotherFUckaaaaa() {
 		
-		int indexPlayer = 0;
-		int playerMaxScore = -1; //Banque
-		int tempScore = 0;
-		
-		Player tempPlayer = null;
-		for(int i = 0 ; i < players.size() ; ++i){
-			tempPlayer = players.get(i);
-			if(tempPlayer.getScore() > tempScore && tempPlayer.getScore() <= 21){
-				tempScore = tempPlayer.getScore();
-				indexPlayer = i;
-			}
-		}
-		
-		if(tempScore > banque.getScore() || banque.getScore() > 21) {
-			playerMaxScore = tempScore;
-		}
-		
-		if(playerMaxScore == -1) {
-			this.fieldBanque.setText("La banque gagne avec un score de : " +this.banque.getScore());	
-			for(Player tempJoueur : this.players){
+		boolean unJoueurGagnant = false;
+		int i = 0;
+		for(Player tempJoueur : this.players){
+			if(tempJoueur.getScore() >= this.banque.getScore() && tempJoueur.getScore() <= 21){ 
+				int gain = (int) (tempJoueur.getBet());
+				
+				if(tempJoueur.getScore() == 21)
+					gain = gain*2;
+				else
+					gain = ((int)(gain*1.5));
+				
+				this.fieldBanque.setText("Le joueur "+i+" gagne : " + tempJoueur.getScore() +" - La banque perd : "+this.banque.getScore()+" - Vous avez gagné : "+gain);
+				
+				tempJoueur.win(tempJoueur.getScore() == 21);
+				unJoueurGagnant = true;
+			} else {
 				tempJoueur.lose();
 			}
-		} else {
-			this.fieldBanque.setText("Le joueur "+(indexPlayer+1)+" gagne avec un score de : "+playerMaxScore);	
-			for(int i = 0 ; i < players.size() ; ++i) {
-				if(i == indexPlayer)
-					players.get(i).win(pot);
-				else
-					players.get(i).lose();
-			}
+
+			betLabels.get(i).setText(""+tempJoueur.getBet());
+			tapisLabels.get(i).setText(""+tempJoueur.getTapis());
+			
+			i++;
 		}
-		
-		for(int i = 0 ; i < players.size() ; ++i) {
-    		betLabels.get(i).setText(""+0);
-    		scoreLabels.get(i).setText(""+players.get(i).getScore());
-    		tapisLabels.get(i).setText(""+players.get(i).getTapis());
+		if(!unJoueurGagnant){
+			this.fieldBanque.setText("La banque gagne avec un score de : " +this.banque.getScore());	
 		}
+	}
+	
+	private void nouvellePartie(){
+		Utils.restartApplication();
 	}
 }
