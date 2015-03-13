@@ -17,13 +17,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import esgi.blackjack.bean.BetPanel;
 import esgi.blackjack.bean.Card;
 import esgi.blackjack.bean.CardPack;
 import esgi.blackjack.bean.PlayMat;
 import esgi.blackjack.bean.Player;
 
 @SuppressWarnings("serial")
-public class MainWindow extends JFrame{
+public class MainWindow extends JFrame {
 	JPanel bankCardPanel, playerPanel;
 	PlayMat bankPanel;
 	
@@ -50,7 +51,7 @@ public class MainWindow extends JFrame{
 	CardPack cardPack;
 	JButton leaveTableButton;
 	
-	private int nbPlayer = 4;
+	private int nbPlayer = 1;
 
 	public MainWindow(){
 		if(nbPlayer > 4)
@@ -173,7 +174,7 @@ public class MainWindow extends JFrame{
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					
+					playerBet(e.getSource());
 				}
 			});
 			
@@ -237,8 +238,6 @@ public class MainWindow extends JFrame{
 		
 		this.banque.addCard(aCardBanque.cardNumber);
 		System.out.println("La banque reçoit la valeur "+ aCardBanque.cardNumber + " En première carte ");
-		
-		
 		
 		leaveTableButton.addActionListener(new ActionListener() {
 			@Override
@@ -406,6 +405,18 @@ public class MainWindow extends JFrame{
 		if(this.banque.getScore()<=17){
 			this.tirerCardBanque.setVisible(false);
 		}
+	}
+	
+	private void playerBet(Object source) {
+		int indexPlayer = this.betButtons.indexOf(source);
+		
+		BetPanel betPanel = new BetPanel(indexPlayer, players.get(indexPlayer).getTapis());
+        if(JOptionPane.showConfirmDialog(null, betPanel,
+                        "Sélectionner votre mise", JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE) == JOptionPane.OK_OPTION) {
+    		players.get(indexPlayer).setBet(betPanel.getBet());
+    		betLabels.get(indexPlayer).setText(""+betPanel.getBet());
+        }
 	}
 	
 	private void resultFinDeGameMotherFUckaaaaa() {

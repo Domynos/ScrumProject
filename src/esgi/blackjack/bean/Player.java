@@ -22,11 +22,15 @@ public class Player {
 		tapis = _tapis;
 	}
 	
+	public void setBet(int bet) {
+		currentBet = bet;
+	}
+	
 	public void addCard(int _cardNumber){
 		score += _cardNumber;
 	}
 
-	
+		
 	
 	public void win(int pot){
 		tapis += pot;
